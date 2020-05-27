@@ -1,9 +1,11 @@
 const { ApolloServer } = require('apollo-server');
 const typeDefs = require('./schema');
-const { createStore } = require('./utils'); // set up our SQLite database
+const { createStore } = require('./utils');
 
 const LaunchAPI = require('./datasources/launch');
 const UserAPI = require('./datasources/user');
+
+const store = createStore(); // set up our SQLite database
 
 const server = new ApolloServer({ 
   typeDefs,
