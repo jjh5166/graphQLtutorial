@@ -39,13 +39,39 @@ const typeDefs = gql`
   # A schema needs to define queries that clients can execute against the data graph.
   # You define your data graph's supported queries as fields of a special type called the Query type.
   type Query {
-    launches: [Launch]!
+    launches(
+    """
+    The number of results to show. Must be >= 1. Default = 20
+    """
+    pageSize: Int
+    """
+    If you add a cursor here, it will only return results _after_ this cursor
+    """
+    after: String
+    ): LaunchConnection!
     launch(id: ID!): Launch
     me: User
   }
-  # To enable clients to modify data, our schema needs to define some mutations.
-  # The Mutation type is a special type that's similar in structure to the Query type. 
+  """
+  Simple wrapper around our list of launches that contains a cursor to the
+  last item in the list. Pass this cursor to the launches query to fetch results
+  after these.
+  """
+  type LaunchConnection {
+    cursor: String!
+    hasMore: Boolean!
+    launches: [Launch]!
+  }
+  # Query.launches takes in two parameters (pageSize and after) and returns a LaunchConnection object.
+
+  # The LaunchConnection includes:
+  # A list of launches (the actual data requested by a query)
+  # A cursor that indicates the current position in the data set
+  # A hasMore boolean that indicates whether the data set contains any more items beyond those included in launches
+
   type Mutation {
+    # To enable clients to modify data, our schema needs to define some mutations.
+    # The Mutation type is a special type that's similar in structure to the Query type. 
     bookTrips(launchIds: [ID]!): TripUpdateResponse!
     cancelTrip(launchId: ID!): TripUpdateResponse!
     login(email: String): String # login token
