@@ -14,7 +14,18 @@ const link = new HttpLink({
 
 const client = new ApolloClient({
   cache,
-  link
+  link: new HttpLink({
+    headers: { authorization: localStorage.getItem('token') },
+    uri: "http://localhost:4000/graphql",
+  }),
+});
+// Specifying the headers option on HttpLink allows us to read the token from localStorage and
+// attach it to the request's headers each time a GraphQL operation is made.
+cache.writeData({
+  data: {
+    isLoggedIn: !!localStorage.getItem('token'),
+    cartItems: [],
+  },
 });
 
 injectStyles();
